@@ -5,15 +5,18 @@ import (
 	"strings"
 
 	"github.com/eoussama/freego/core/consts"
+	"github.com/eoussama/freego/core/types"
 )
 
-func GetPath(endpoint []interface{}) string {
+func GetPath(fragments []interface{}) string {
 	var parts []string
 
-	for _, part := range endpoint {
-		switch v := part.(type) {
+	for _, fragment := range fragments {
+		switch v := fragment.(type) {
 		case string:
-			parts = append(parts, v)
+			parts = append(parts, string(v))
+		case types.Filter:
+			parts = append(parts, string(v))
 		case int:
 			parts = append(parts, strconv.Itoa(v))
 		default:

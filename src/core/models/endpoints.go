@@ -1,9 +1,17 @@
 package models
 
-import "fmt"
+import "errors"
 
 type Endpoint struct {
 	Fragments []interface{}
+}
+
+func (e Endpoint) Append(params ...interface{}) Endpoint {
+	if len(params) > 0 {
+		e.Fragments = append(e.Fragments, params...)
+	}
+
+	return e
 }
 
 func (e Endpoint) Build(params ...interface{}) ([]interface{}, error) {
@@ -18,7 +26,7 @@ func (e Endpoint) Build(params ...interface{}) ([]interface{}, error) {
 	for _, fragment := range e.Fragments {
 		if fragment == "?" {
 			if paramIndex >= len(params) {
-				return nil, fmt.Errorf("not enough parameters provided")
+				return nil, errors.New("not enough parameters provided")
 			}
 
 			result = append(result, params[paramIndex])
@@ -29,7 +37,7 @@ func (e Endpoint) Build(params ...interface{}) ([]interface{}, error) {
 	}
 
 	if paramIndex < len(params) {
-		return nil, fmt.Errorf("too many parameters provided")
+		return nil, errors.New("too many parameters provided")
 	}
 
 	return result, nil

@@ -1,31 +1,14 @@
 package freego
 
 import (
-	"fmt"
+	"errors"
+	"strconv"
 
 	"github.com/eoussama/freego/core/consts"
 	"github.com/eoussama/freego/core/helpers"
+	"github.com/eoussama/freego/core/models"
+	"github.com/eoussama/freego/core/types"
 )
-
-// func Test() {
-// 	// Public API request
-// 	publicAuthHeader := fmt.Sprintf("Basic %s", apiKey)
-// 	publicResponse, err := makeRequest("GET", publicPingURL, publicAuthHeader)
-// 	if err != nil {
-// 		fmt.Println("Error making public API request:", err)
-// 		os.Exit(1)
-// 	}
-// 	fmt.Println("Public API Response:", publicResponse)
-
-// 	// Partner API request
-// 	partnerAuthHeader := fmt.Sprintf("Partner %s %s", apiKey, serviceUID)
-// 	partnerResponse, err := makeRequest("GET", partnerPingURL, partnerAuthHeader)
-// 	if err != nil {
-// 		fmt.Println("Error making partner API request:", err)
-// 		os.Exit(1)
-// 	}
-// 	fmt.Println("Partner API Response:", partnerResponse)
-// }
 
 type Client struct {
 	ApiKey string
@@ -35,59 +18,77 @@ func Init(apiKey string) Client {
 	return Client{ApiKey: apiKey}
 }
 
-func (c Client) Ping() any {
+func (c Client) Ping() (bool, error) {
 	endpoint, err := consts.EndpointPing.Build()
 	if err != nil {
-		panic("dddd")
+		return false, errors.New("invalid endpoint")
 	}
 
 	response, err := helpers.MakeRequest(endpoint, c.ApiKey)
 	if err != nil {
-		return false
+		return false, err
+	} else if !response.Success {
+		return false, errors.New(response.Error)
 	}
 
-	return response.Data
+	return response.Success, nil
 }
 
-func (c Client) GetGames() []int {
-	endpoint, err := consts.EndpointFreeGames.Build()
+func (c Client) GetGames(filter types.Filter) ([]int, error) {
+	endpoint, err := consts.EndpointGames.Append(filter).Build()
+
 	if err != nil {
-		panic("dddd")
+		return make([]int, 0), errors.New("invalid endpoint")
 	}
 
 	response, err := helpers.MakeRequest(endpoint, c.ApiKey)
 	if err != nil {
-		return make([]int, 0)
+		return make([]int, 0), err
+	} else if !response.Success {
+		return make([]int, 0), errors.New(response.Error)
 	}
 
-	// Use type assertion to check and convert the Data field to []int
 	if data, ok := response.Data.([]interface{}); ok {
 		intData := make([]int, len(data))
+
 		for i, v := range data {
-			if floatVal, ok := v.(float64); ok {
-				intData[i] = int(floatVal)
+			if intVal, ok := v.(float64); ok {
+				intData[i] = int(intVal)
 			} else {
-				fmt.Println("Error: Expected float64 but got a different type")
-				return make([]int, 0)
+				return make([]int, 0), errors.New("expected int but got a different type")
 			}
 		}
-		return intData
+
+		return intData, nil
 	}
 
-	fmt.Println("Error: Data is not of type []int")
-	return make([]int, 0)
+	return make([]int, 0), errors.New("data is not of type []int")
 }
 
-func (c Client) GetGameDetails(gameId int) any {
-	endpoint, err := consts.GameDetailsInfo.Build(gameId)
+func (c Client) GetGame(filter types.Filter, gameId int) (*models.GameInfo, error) {
+	endpoint, err := consts.EndpointGame.Append(filter).Build(gameId)
 	if err != nil {
-		panic("dddd")
+		return nil, err
 	}
 
 	response, err := helpers.MakeRequest(endpoint, c.ApiKey)
 	if err != nil {
-		return make([]int, 0)
+		return nil, err
+	} else if !response.Success {
+		return nil, errors.New(response.Error)
 	}
 
-	return response.Data
+	if responseData, ok := response.Data.(map[string]interface{}); ok {
+		var key string = strconv.Itoa(gameId)
+		var data map[string]interface{} = responseData[key].(map[string]interface{})
+
+		result, err := models.GameInfo{}.From(data)
+		if err != nil {
+			return nil, err
+		}
+
+		return result, nil
+	} else {
+		return nil, errors.New("invalid payload")
+	}
 }
