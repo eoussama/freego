@@ -32,26 +32,14 @@ func main() {
 		panic(fmt.Sprintf("[Approved Games Error] %s", err))
 	}
 
-	resp_game_all, err := client.GetGame(enums.FilterAll, resp_games_free[0])
-	if err != nil {
-		panic(fmt.Sprintf("[Game All Error] %s", err))
-	}
-
 	resp_game_info, err := client.GetGame(enums.FilterInfo, resp_games_free[0])
 	if err != nil {
 		panic(fmt.Sprintf("[Game Info Error] %s", err))
-	}
-
-	resp_game_analytics, err := client.GetGame(enums.Filteranalytics, resp_games_free[0])
-	if err != nil {
-		panic(fmt.Sprintf("[Game Analytics Error] %s", err))
 	}
 
 	fmt.Println("ping:", resp_ping)
 	fmt.Println("all games:", len(resp_games_all))
 	fmt.Println("free games:", len(resp_games_free))
 	fmt.Println("approved games:", len(resp_games_approved))
-	fmt.Println("game details all:", resp_game_all)
 	fmt.Println("game details info:", resp_game_info)
-	fmt.Println("game details analytics:", resp_game_analytics)
 }
