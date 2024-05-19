@@ -2,9 +2,12 @@ package freego
 
 import (
 	"errors"
+	"strconv"
 
 	"github.com/eoussama/freego/core/consts"
 	"github.com/eoussama/freego/core/helpers"
+	"github.com/eoussama/freego/core/models"
+	"github.com/eoussama/freego/core/types"
 )
 
 type Client struct {
@@ -31,7 +34,7 @@ func (c Client) Ping() (bool, error) {
 	return response.Success, nil
 }
 
-func (c Client) GetGames(filter string) ([]int, error) {
+func (c Client) GetGames(filter types.Filter) ([]int, error) {
 	endpoint, err := consts.EndpointGames.Append(filter).Build()
 	if err != nil {
 		return make([]int, 0), errors.New("invalid endpoint")
@@ -61,18 +64,26 @@ func (c Client) GetGames(filter string) ([]int, error) {
 	return make([]int, 0), errors.New("data is not of type []int")
 }
 
-func (c Client) GetGame(filter string, gameId int) (any, error) {
+func (c Client) GetGame(filter types.Filter, gameId int) (*models.GameInfo, error) {
 	endpoint, err := consts.EndpointGame.Append(filter).Build(gameId)
 	if err != nil {
-		return make([]int, 0), err
+		return nil, err
 	}
 
 	response, err := helpers.MakeRequest(endpoint, c.ApiKey)
 	if err != nil {
-		return make([]int, 0), err
+		return nil, err
 	} else if !response.Success {
-		return make([]int, 0), errors.New(response.Error)
+		return nil, errors.New(response.Error)
 	}
 
-	return response.Data, nil
+	if responseData, ok := response.Data.(map[string]map[string]interface{}); ok {
+		var key string = strconv.Itoa(gameId)
+		var data map[string]interface{} = responseData[key]
+		var result models.GameInfo = models.GameInfo{}.From(data)
+
+		return &result, nil
+	} else {
+		return nil, errors.New("invalid payload")
+	}
 }
