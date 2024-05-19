@@ -32,7 +32,7 @@ func (c Client) Ping() (bool, error) {
 }
 
 func (c Client) GetGames(filter string) ([]int, error) {
-	endpoint, err := consts.Games.Append(filter).Build()
+	endpoint, err := consts.EndpointGames.Append(filter).Build()
 	if err != nil {
 		return make([]int, 0), errors.New("invalid endpoint")
 	}
@@ -61,16 +61,18 @@ func (c Client) GetGames(filter string) ([]int, error) {
 	return make([]int, 0), errors.New("data is not of type []int")
 }
 
-func (c Client) GetGameDetails(gameId int) any {
-	endpoint, err := consts.GameDetailsInfo.Build(gameId)
+func (c Client) GetGame(filter string, gameId int) (any, error) {
+	endpoint, err := consts.EndpointGame.Append(filter).Build(gameId)
 	if err != nil {
-		panic("dddd")
+		return make([]int, 0), err
 	}
 
 	response, err := helpers.MakeRequest(endpoint, c.ApiKey)
 	if err != nil {
-		return make([]int, 0)
+		return make([]int, 0), err
+	} else if !response.Success {
+		return make([]int, 0), errors.New(response.Error)
 	}
 
-	return response.Data
+	return response.Data, nil
 }
