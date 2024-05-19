@@ -1,8 +1,6 @@
 package models
 
 import (
-	"fmt"
-
 	"github.com/eoussama/freego/core/types"
 )
 
@@ -67,7 +65,6 @@ type GameInfo struct {
 }
 
 func (gi GameInfo) From(data map[string]interface{}) GameInfo {
-	fmt.Println("data =>", data)
 	return GameInfo{
 		Title: data["title"].(string),
 	}
