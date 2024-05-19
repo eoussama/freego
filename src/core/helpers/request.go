@@ -6,14 +6,15 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/eoussama/freego/core/consts"
 	"github.com/eoussama/freego/core/models"
 )
 
-func MakeRequest(endpoint string, apiKey string) (*models.Response, error) {
+func MakeRequest(endpoint []interface{}, apiKey string) (*models.Response, error) {
 	client := &http.Client{}
-	url := consts.Config.Url + "/" + endpoint
+
+	url := GetPath(endpoint)
 	authHeader := "Basic " + apiKey
+
 	fmt.Println("url=", url)
 
 	req, err := http.NewRequest("GET", url, nil)
