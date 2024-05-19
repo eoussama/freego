@@ -2,7 +2,6 @@ package helpers
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 
@@ -14,8 +13,6 @@ func MakeRequest(endpoint []interface{}, apiKey string) (*models.Response, error
 
 	url := GetPath(endpoint)
 	authHeader := "Basic " + apiKey
-
-	fmt.Println("url=", url)
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
