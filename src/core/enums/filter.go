@@ -1,9 +1,11 @@
 package enums
 
+import "github.com/eoussama/freego/core/types"
+
 const (
-	FilterAll       string = "all"
-	FilterFree      string = "free"
-	FilterInfo      string = "info"
-	FilterApproved  string = "approved"
-	Filteranalytics string = "analytics"
+	FilterAll       types.Filter = "all"
+	FilterFree      types.Filter = "free"
+	FilterInfo      types.Filter = "info"
+	FilterApproved  types.Filter = "approved"
+	Filteranalytics types.Filter = "analytics"
 )
