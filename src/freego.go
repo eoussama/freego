@@ -2,7 +2,6 @@ package freego
 
 import (
 	"errors"
-	"fmt"
 
 	"github.com/eoussama/freego/core/consts"
 	"github.com/eoussama/freego/core/helpers"
@@ -25,37 +24,41 @@ func (c Client) Ping() (bool, error) {
 	response, err := helpers.MakeRequest(endpoint, c.ApiKey)
 	if err != nil {
 		return false, err
+	} else if !response.Success {
+		return false, errors.New(response.Error)
 	}
 
 	return response.Success, nil
 }
 
-func (c Client) GetGames(filter string) []int {
+func (c Client) GetGames(filter string) ([]int, error) {
 	endpoint, err := consts.Games.Append(filter).Build()
 	if err != nil {
-		panic("dddd")
+		return make([]int, 0), errors.New("invalid endpoint")
 	}
 
 	response, err := helpers.MakeRequest(endpoint, c.ApiKey)
 	if err != nil {
-		return make([]int, 0)
+		return make([]int, 0), err
+	} else if !response.Success {
+		return make([]int, 0), errors.New(response.Error)
 	}
 
 	if data, ok := response.Data.([]interface{}); ok {
 		intData := make([]int, len(data))
+
 		for i, v := range data {
-			if floatVal, ok := v.(float64); ok {
-				intData[i] = int(floatVal)
+			if intVal, ok := v.(float64); ok {
+				intData[i] = int(intVal)
 			} else {
-				fmt.Println("Error: Expected float64 but got a different type")
-				return make([]int, 0)
+				return make([]int, 0), errors.New("expected int but got a different type")
 			}
 		}
-		return intData
+
+		return intData, nil
 	}
 
-	fmt.Println("Error: Data is not of type []int")
-	return make([]int, 0)
+	return make([]int, 0), errors.New("data is not of type []int")
 }
 
 func (c Client) GetGameDetails(gameId int) any {
