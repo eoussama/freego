@@ -3,6 +3,7 @@ package freego
 import (
 	"fmt"
 
+	"github.com/eoussama/freego/core/consts"
 	"github.com/eoussama/freego/core/helpers"
 )
 
@@ -35,7 +36,12 @@ func Init(apiKey string) Client {
 }
 
 func (c Client) Ping() any {
-	response, err := helpers.MakeRequest("ping", c.ApiKey)
+	endpoint, err := consts.EndpointPing.Build()
+	if err != nil {
+		panic("dddd")
+	}
+
+	response, err := helpers.MakeRequest(endpoint, c.ApiKey)
 	if err != nil {
 		return false
 	}
@@ -44,7 +50,12 @@ func (c Client) Ping() any {
 }
 
 func (c Client) GetGames() []int {
-	response, err := helpers.MakeRequest("games/free", c.ApiKey)
+	endpoint, err := consts.EndpointFreeGames.Build()
+	if err != nil {
+		panic("dddd")
+	}
+
+	response, err := helpers.MakeRequest(endpoint, c.ApiKey)
 	if err != nil {
 		return make([]int, 0)
 	}
@@ -68,9 +79,12 @@ func (c Client) GetGames() []int {
 }
 
 func (c Client) GetGameDetails(gameId int) any {
-	s := fmt.Sprintf("%d", gameId)
+	endpoint, err := consts.GameDetailsInfo.Build(gameId)
+	if err != nil {
+		panic("dddd")
+	}
 
-	response, err := helpers.MakeRequest("game/"+s+"/info", c.ApiKey)
+	response, err := helpers.MakeRequest(endpoint, c.ApiKey)
 	if err != nil {
 		return make([]int, 0)
 	}
