@@ -6,6 +6,14 @@ type Endpoint struct {
 	Fragments []interface{}
 }
 
+func (e Endpoint) Append(params ...interface{}) Endpoint {
+	if len(params) > 0 {
+		e.Fragments = append(e.Fragments, params...)
+	}
+
+	return e
+}
+
 func (e Endpoint) Build(params ...interface{}) ([]interface{}, error) {
 
 	if len(params) == 0 {

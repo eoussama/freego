@@ -30,8 +30,8 @@ func (c Client) Ping() (bool, error) {
 	return response.Success, nil
 }
 
-func (c Client) GetGames() []int {
-	endpoint, err := consts.EndpointFreeGames.Build()
+func (c Client) GetGames(filter string) []int {
+	endpoint, err := consts.Games.Append(filter).Build()
 	if err != nil {
 		panic("dddd")
 	}
