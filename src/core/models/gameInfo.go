@@ -1,6 +1,8 @@
 package models
 
 import (
+	"encoding/json"
+
 	"github.com/eoussama/freego/core/types"
 )
 
@@ -15,7 +17,7 @@ type GameInfo struct {
 	OrgUrl      string                 `json:"org_url"`
 	Description string                 `json:"description"`
 	Until       int                    `json:"until,omitempty"`
-	Rating      int8                   `json:"rating,omitempty"`
+	Rating      float32                `json:"rating,omitempty"`
 	Notice      string                 `json:"notice,omitempty"`
 
 	StoreMeta struct {
@@ -54,18 +56,26 @@ type GameInfo struct {
 	} `json:"thumbnail"`
 
 	Price struct {
-		Euro   int `json:"euro"`
-		Dollar int `json:"dollar"`
+		Euro   float32 `json:"euro"`
+		Dollar float32 `json:"dollar"`
 	} `json:"price"`
 
 	OrgPrice struct {
-		Euro   int `json:"euro"`
-		Dollar int `json:"dollar"`
+		Euro   float32 `json:"euro"`
+		Dollar float32 `json:"dollar"`
 	} `json:"org_price"`
 }
 
-func (gi GameInfo) From(data map[string]interface{}) GameInfo {
-	return GameInfo{
-		Title: data["title"].(string),
+func (gi GameInfo) From(data map[string]interface{}) (*GameInfo, error) {
+	jsonData, err := json.Marshal(data)
+	if err != nil {
+		return nil, err
 	}
+
+	err = json.Unmarshal([]byte(string(jsonData)), &gi)
+	if err != nil {
+		return nil, err
+	}
+
+	return &gi, nil
 }

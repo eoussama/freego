@@ -12,13 +12,40 @@ func main() {
 	apiKey := os.Getenv("FREESTUFF_API_KEY")
 	client := freego.Init(apiKey)
 
-	resp_ping, _ := client.Ping()
-	resp_games_all, _ := client.GetGames(enums.FilterAll)
-	resp_games_free, _ := client.GetGames(enums.FilterFree)
-	resp_games_approved, _ := client.GetGames(enums.FilterApproved)
-	resp_game_all, _ := client.GetGame(enums.FilterAll, resp_games_all[0])
-	resp_game_info, _ := client.GetGame(enums.FilterInfo, resp_games_all[0])
-	resp_game_analytics, _ := client.GetGame(enums.Filteranalytics, resp_games_all[0])
+	resp_ping, err := client.Ping()
+	if err != nil {
+		panic(fmt.Sprintf("[Ping Error] %s", err))
+	}
+
+	resp_games_all, err := client.GetGames(enums.FilterAll)
+	if err != nil {
+		panic(fmt.Sprintf("[All Games Error] %s", err))
+	}
+
+	resp_games_free, err := client.GetGames(enums.FilterFree)
+	if err != nil {
+		panic(fmt.Sprintf("[Free Games Error] %s", err))
+	}
+
+	resp_games_approved, err := client.GetGames(enums.FilterApproved)
+	if err != nil {
+		panic(fmt.Sprintf("[Approved Games Error] %s", err))
+	}
+
+	resp_game_all, err := client.GetGame(enums.FilterAll, resp_games_free[0])
+	if err != nil {
+		panic(fmt.Sprintf("[Game All Error] %s", err))
+	}
+
+	resp_game_info, err := client.GetGame(enums.FilterInfo, resp_games_free[0])
+	if err != nil {
+		panic(fmt.Sprintf("[Game Info Error] %s", err))
+	}
+
+	resp_game_analytics, err := client.GetGame(enums.Filteranalytics, resp_games_free[0])
+	if err != nil {
+		panic(fmt.Sprintf("[Game Analytics Error] %s", err))
+	}
 
 	fmt.Println("ping:", resp_ping)
 	fmt.Println("all games:", len(resp_games_all))

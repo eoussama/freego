@@ -36,6 +36,7 @@ func (c Client) Ping() (bool, error) {
 
 func (c Client) GetGames(filter types.Filter) ([]int, error) {
 	endpoint, err := consts.EndpointGames.Append(filter).Build()
+
 	if err != nil {
 		return make([]int, 0), errors.New("invalid endpoint")
 	}
@@ -77,12 +78,16 @@ func (c Client) GetGame(filter types.Filter, gameId int) (*models.GameInfo, erro
 		return nil, errors.New(response.Error)
 	}
 
-	if responseData, ok := response.Data.(map[string]map[string]interface{}); ok {
+	if responseData, ok := response.Data.(map[string]interface{}); ok {
 		var key string = strconv.Itoa(gameId)
-		var data map[string]interface{} = responseData[key]
-		var result models.GameInfo = models.GameInfo{}.From(data)
+		var data map[string]interface{} = responseData[key].(map[string]interface{})
 
-		return &result, nil
+		result, err := models.GameInfo{}.From(data)
+		if err != nil {
+			return nil, err
+		}
+
+		return result, nil
 	} else {
 		return nil, errors.New("invalid payload")
 	}
