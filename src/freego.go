@@ -1,31 +1,12 @@
 package freego
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/eoussama/freego/core/consts"
 	"github.com/eoussama/freego/core/helpers"
 )
-
-// func Test() {
-// 	// Public API request
-// 	publicAuthHeader := fmt.Sprintf("Basic %s", apiKey)
-// 	publicResponse, err := makeRequest("GET", publicPingURL, publicAuthHeader)
-// 	if err != nil {
-// 		fmt.Println("Error making public API request:", err)
-// 		os.Exit(1)
-// 	}
-// 	fmt.Println("Public API Response:", publicResponse)
-
-// 	// Partner API request
-// 	partnerAuthHeader := fmt.Sprintf("Partner %s %s", apiKey, serviceUID)
-// 	partnerResponse, err := makeRequest("GET", partnerPingURL, partnerAuthHeader)
-// 	if err != nil {
-// 		fmt.Println("Error making partner API request:", err)
-// 		os.Exit(1)
-// 	}
-// 	fmt.Println("Partner API Response:", partnerResponse)
-// }
 
 type Client struct {
 	ApiKey string
@@ -35,18 +16,18 @@ func Init(apiKey string) Client {
 	return Client{ApiKey: apiKey}
 }
 
-func (c Client) Ping() any {
+func (c Client) Ping() (bool, error) {
 	endpoint, err := consts.EndpointPing.Build()
 	if err != nil {
-		panic("dddd")
+		return false, errors.New("invalid endpoint")
 	}
 
 	response, err := helpers.MakeRequest(endpoint, c.ApiKey)
 	if err != nil {
-		return false
+		return false, err
 	}
 
-	return response.Data
+	return response.Success, nil
 }
 
 func (c Client) GetGames() []int {
@@ -60,7 +41,6 @@ func (c Client) GetGames() []int {
 		return make([]int, 0)
 	}
 
-	// Use type assertion to check and convert the Data field to []int
 	if data, ok := response.Data.([]interface{}); ok {
 		intData := make([]int, len(data))
 		for i, v := range data {
