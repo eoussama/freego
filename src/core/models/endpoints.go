@@ -14,6 +14,14 @@ func (e Endpoint) Append(params ...interface{}) Endpoint {
 	return e
 }
 
+func (e Endpoint) Prepend(params ...interface{}) Endpoint {
+	if len(params) > 0 {
+		e.Fragments = append(params, e.Fragments...)
+	}
+
+	return e
+}
+
 func (e Endpoint) Build(params ...interface{}) ([]interface{}, error) {
 
 	if len(params) == 0 {

@@ -4,7 +4,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/eoussama/freego/core/consts"
 	"github.com/eoussama/freego/core/types"
 )
 
@@ -24,5 +23,5 @@ func GetPath(fragments []interface{}) string {
 		}
 	}
 
-	return consts.Config.Url + "/" + strings.Join(parts, "/")
+	return strings.Join(parts, "/")
 }

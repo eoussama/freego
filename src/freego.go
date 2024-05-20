@@ -3,6 +3,7 @@ package freego
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -13,33 +14,33 @@ import (
 )
 
 type Client struct {
-	Port   string
-	Route  string
-	Secret string
-	ApiKey string
+	Config models.Config
 }
 
-func Init() Client {
-	var secret = helpers.GetEnv("FREEGO_WEBHOOK_SECRET", "")
-	var port = helpers.GetEnv("FREEGO_WEBHOOK_PORT", "8080")
-	var apiKey = helpers.GetEnv("FREEGO_FREESTUFF_API_KEY", "")
-	var route = helpers.GetEnv("FREEGO_WEBHOOK_ROUTE", "/webhook")
+func Config(options *models.Options) models.Config {
+	return models.Config{}.Build(options)
+}
 
-	return Client{
-		Port:   port,
-		Route:  route,
-		Secret: secret,
-		ApiKey: apiKey,
+func Init(config ...models.Config) (*Client, error) {
+	switch len(config) {
+	case 0:
+		var config = models.Config{}.Build(&models.Options{})
+		return &Client{Config: config}, nil
+	case 1:
+		return &Client{Config: config[0]}, nil
+	default:
+		return nil, errors.New("too many arguments")
 	}
 }
 
 func (c Client) Ping() (bool, error) {
-	endpoint, err := consts.EndpointPing.Build()
+	fmt.Println("secret is", c.Config.Secret)
+	endpoint, err := consts.EndpointPing.Prepend(c.Config.Url).Build()
 	if err != nil {
 		return false, errors.New("invalid endpoint")
 	}
 
-	response, err := helpers.MakeRequest(endpoint, c.ApiKey)
+	response, err := helpers.MakeRequest(endpoint, c.Config.ApiKey)
 	if err != nil {
 		return false, err
 	} else if !response.Success {
@@ -50,13 +51,13 @@ func (c Client) Ping() (bool, error) {
 }
 
 func (c Client) GetGames(filter types.TFilter) ([]int, error) {
-	endpoint, err := consts.EndpointGames.Append(filter).Build()
+	endpoint, err := consts.EndpointGames.Prepend(c.Config.Url).Append(filter).Build()
 
 	if err != nil {
 		return make([]int, 0), errors.New("invalid endpoint")
 	}
 
-	response, err := helpers.MakeRequest(endpoint, c.ApiKey)
+	response, err := helpers.MakeRequest(endpoint, c.Config.ApiKey)
 	if err != nil {
 		return make([]int, 0), err
 	} else if !response.Success {
@@ -81,12 +82,12 @@ func (c Client) GetGames(filter types.TFilter) ([]int, error) {
 }
 
 func (c Client) GetGame(filter types.TFilter, gameId int) (*models.GameInfo, error) {
-	endpoint, err := consts.EndpointGame.Append(filter).Build(gameId)
+	endpoint, err := consts.EndpointGame.Prepend(c.Config.Url).Append(filter).Build(gameId)
 	if err != nil {
 		return nil, err
 	}
 
-	response, err := helpers.MakeRequest(endpoint, c.ApiKey)
+	response, err := helpers.MakeRequest(endpoint, c.Config.ApiKey)
 	if err != nil {
 		return nil, err
 	} else if !response.Success {
@@ -122,11 +123,11 @@ func (c Client) On(event types.TEvent, callback func(*models.Event, error)) erro
 			return
 		}
 
-		if reqBody.Secret == c.Secret {
+		if reqBody.Secret == c.Config.Secret {
 			callback(&reqBody, nil)
 		}
 	}
 
-	http.HandleFunc(c.Route, handler)
-	return http.ListenAndServe(":"+c.Port, nil)
+	http.HandleFunc(c.Config.Route, handler)
+	return http.ListenAndServe(":"+c.Config.Port, nil)
 }
