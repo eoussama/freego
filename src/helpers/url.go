@@ -4,7 +4,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/eoussama/freego/core/types"
+	"github.com/eoussama/freego/src/types"
 )
 
 func GetPath(fragments []interface{}) string {

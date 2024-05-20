@@ -3,7 +3,7 @@ package models
 import (
 	"encoding/json"
 
-	"github.com/eoussama/freego/core/types"
+	"github.com/eoussama/freego/src/types"
 )
 
 type GameInfo struct {

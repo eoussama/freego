@@ -6,10 +6,10 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/eoussama/freego/core/consts"
-	"github.com/eoussama/freego/core/helpers"
-	"github.com/eoussama/freego/core/models"
-	"github.com/eoussama/freego/core/types"
+	"github.com/eoussama/freego/src/consts"
+	"github.com/eoussama/freego/src/helpers"
+	"github.com/eoussama/freego/src/models"
+	"github.com/eoussama/freego/src/types"
 )
 
 type Client struct {

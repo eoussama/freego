@@ -1,6 +1,6 @@
 package enums
 
-import "github.com/eoussama/freego/core/types"
+import "github.com/eoussama/freego/src/types"
 
 const (
 	StorePS      types.TStore = "ps"

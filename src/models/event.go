@@ -1,6 +1,6 @@
 package models
 
-import "github.com/eoussama/freego/core/types"
+import "github.com/eoussama/freego/src/types"
 
 type Event struct {
 	Data   []int        `json:"data"`
