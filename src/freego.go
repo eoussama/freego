@@ -3,7 +3,6 @@ package freego
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -34,7 +33,6 @@ func Init(config ...models.Config) (*Client, error) {
 }
 
 func (c Client) Ping() (bool, error) {
-	fmt.Println("secret is", c.Config.Secret)
 	endpoint, err := consts.EndpointPing.Prepend(c.Config.Url).Build()
 	if err != nil {
 		return false, errors.New("invalid endpoint")

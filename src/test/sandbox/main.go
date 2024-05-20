@@ -46,15 +46,18 @@ func main() {
 	fmt.Println("approved games:", len(resp_games_approved))
 	fmt.Println("game details info:", resp_game_info)
 
-	err = client.On(enums.EventFreeGames, func(e *models.Event, err error) {
+	go func() {
+		err = client.On(enums.EventFreeGames, func(e *models.Event, err error) {
+			if err != nil {
+				panic(fmt.Sprintf("[On Free Games Error] %s", err))
+			}
+
+			fmt.Println("on free games", e.Data)
+		})
+
 		if err != nil {
 			panic(fmt.Sprintf("[On Free Games Error] %s", err))
 		}
-
-		fmt.Println("on free games", e.Data)
-	})
-
-	if err != nil {
-		panic(fmt.Sprintf("[On Free Games Error] %s", err))
-	}
+	}()
+	select {}
 }
