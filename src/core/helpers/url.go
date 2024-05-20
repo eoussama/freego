@@ -15,7 +15,7 @@ func GetPath(fragments []interface{}) string {
 		switch v := fragment.(type) {
 		case string:
 			parts = append(parts, string(v))
-		case types.Filter:
+		case types.TFilter:
 			parts = append(parts, string(v))
 		case int:
 			parts = append(parts, strconv.Itoa(v))

@@ -1,7 +1,9 @@
 package freego
 
 import (
+	"encoding/json"
 	"errors"
+	"net/http"
 	"strconv"
 
 	"github.com/eoussama/freego/core/consts"
@@ -11,11 +13,24 @@ import (
 )
 
 type Client struct {
+	Port   string
+	Route  string
+	Secret string
 	ApiKey string
 }
 
-func Init(apiKey string) Client {
-	return Client{ApiKey: apiKey}
+func Init() Client {
+	var secret = helpers.GetEnv("FREEGO_WEBHOOK_SECRET", "")
+	var port = helpers.GetEnv("FREEGO_WEBHOOK_PORT", "8080")
+	var apiKey = helpers.GetEnv("FREEGO_FREESTUFF_API_KEY", "")
+	var route = helpers.GetEnv("FREEGO_WEBHOOK_ROUTE", "/webhook")
+
+	return Client{
+		Port:   port,
+		Route:  route,
+		Secret: secret,
+		ApiKey: apiKey,
+	}
 }
 
 func (c Client) Ping() (bool, error) {
@@ -34,7 +49,7 @@ func (c Client) Ping() (bool, error) {
 	return response.Success, nil
 }
 
-func (c Client) GetGames(filter types.Filter) ([]int, error) {
+func (c Client) GetGames(filter types.TFilter) ([]int, error) {
 	endpoint, err := consts.EndpointGames.Append(filter).Build()
 
 	if err != nil {
@@ -65,7 +80,7 @@ func (c Client) GetGames(filter types.Filter) ([]int, error) {
 	return make([]int, 0), errors.New("data is not of type []int")
 }
 
-func (c Client) GetGame(filter types.Filter, gameId int) (*models.GameInfo, error) {
+func (c Client) GetGame(filter types.TFilter, gameId int) (*models.GameInfo, error) {
 	endpoint, err := consts.EndpointGame.Append(filter).Build(gameId)
 	if err != nil {
 		return nil, err
@@ -91,4 +106,27 @@ func (c Client) GetGame(filter types.Filter, gameId int) (*models.GameInfo, erro
 	} else {
 		return nil, errors.New("invalid payload")
 	}
+}
+
+func (c Client) On(event types.TEvent, callback func(*models.Event, error)) error {
+	handler := func(w http.ResponseWriter, r *http.Request) {
+
+		if r.Method != http.MethodPost {
+			callback(nil, errors.New("invalid request method"))
+			return
+		}
+
+		var reqBody models.Event
+		if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
+			callback(nil, errors.New("bad request"))
+			return
+		}
+
+		if reqBody.Secret == c.Secret {
+			callback(&reqBody, nil)
+		}
+	}
+
+	http.HandleFunc(c.Route, handler)
+	return http.ListenAndServe(":"+c.Port, nil)
 }

@@ -2,15 +2,14 @@ package main
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/eoussama/freego"
 	"github.com/eoussama/freego/core/enums"
+	"github.com/eoussama/freego/core/models"
 )
 
 func main() {
-	apiKey := os.Getenv("FREESTUFF_API_KEY")
-	client := freego.Init(apiKey)
+	client := freego.Init()
 
 	resp_ping, err := client.Ping()
 	if err != nil {
@@ -42,4 +41,16 @@ func main() {
 	fmt.Println("free games:", len(resp_games_free))
 	fmt.Println("approved games:", len(resp_games_approved))
 	fmt.Println("game details info:", resp_game_info)
+
+	err = client.On(enums.EventFreeGames, func(e *models.Event, err error) {
+		if err != nil {
+			panic(fmt.Sprintf("[On Free Games Error] %s", err))
+		}
+
+		fmt.Println("on free games", e.Data)
+	})
+
+	if err != nil {
+		panic(fmt.Sprintf("[On Free Games Error] %s", err))
+	}
 }
