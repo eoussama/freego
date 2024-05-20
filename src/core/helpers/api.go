@@ -12,31 +12,35 @@ func MakeRequest(endpoint []interface{}, apiKey string) (*models.Response, error
 	client := &http.Client{}
 
 	url := GetPath(endpoint)
-	authHeader := "Basic " + apiKey
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	req.Header.Set("Authorization", authHeader)
+	setHeaders(req, apiKey)
 
 	resp, err := client.Do(req)
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
 
+	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
 	}
 
-	var apiResponse models.Response
-	err = json.Unmarshal(body, &apiResponse)
+	var response models.Response
+	err = json.Unmarshal(body, &response)
 	if err != nil {
 		return nil, err
 	}
 
-	return &apiResponse, nil
+	return &response, nil
+}
+
+func setHeaders(req *http.Request, apiKey string) {
+	authHeader := "Basic " + apiKey
+	req.Header.Set("Authorization", authHeader)
 }
