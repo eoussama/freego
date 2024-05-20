@@ -31,7 +31,7 @@ go get github.com/eoussama/freego
 
 ### Environment Variables
 
-The Freego package can be configured using environment variables. Create a `.env` file after the [`.env.example`](./.env.example) or set the following variables in your environment:
+The Freego package can be configured using environment variables. Create a `.env` file after the [`.env.example`](./.env.example) file or set the following variables in your environment:
 
 ```txt
 FREEGO_WEBHOOK_PORT=
@@ -123,8 +123,8 @@ func main() {
 
 ### Webhook
 
-For local testing, the projectcomes with a Docker image that's already set up with [smee](smee.io) for convenient event reception.
+For local testing, the project comes with a Docker image that's already set up with [smee](smee.io) for convenient event reception.
 
 ```sh
-./smee <smee_url> <local_port>
+./smee.sh <smee_url> <local_port>
 ```
