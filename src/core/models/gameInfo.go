@@ -7,18 +7,18 @@ import (
 )
 
 type GameInfo struct {
-	Url         string                 `json:"url"`
-	Tags        []string               `json:"tags"`
-	Type        types.AnnouncementType `json:"type"`
-	Kind        types.ProductKind      `json:"kind"`
-	Store       types.Store            `json:"store"`
-	Flags       types.GameFlag         `json:"flags"`
-	Title       string                 `json:"title"`
-	OrgUrl      string                 `json:"org_url"`
-	Description string                 `json:"description"`
-	Until       int                    `json:"until,omitempty"`
-	Rating      float32                `json:"rating,omitempty"`
-	Notice      string                 `json:"notice,omitempty"`
+	Url         string                  `json:"url"`
+	Tags        []string                `json:"tags"`
+	Type        types.TAnnouncementType `json:"type"`
+	Kind        types.TProductKind      `json:"kind"`
+	Store       types.TStore            `json:"store"`
+	Flags       types.TGameFlag         `json:"flags"`
+	Title       string                  `json:"title"`
+	OrgUrl      string                  `json:"org_url"`
+	Description string                  `json:"description"`
+	Until       int                     `json:"until,omitempty"`
+	Rating      float32                 `json:"rating,omitempty"`
+	Notice      string                  `json:"notice,omitempty"`
 
 	StoreMeta struct {
 		SteamSubIDs string `json:"steam_subids"`

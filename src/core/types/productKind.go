@@ -1,3 +1,3 @@
 package types
 
-type ProductKind string
+type TProductKind string
