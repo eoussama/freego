@@ -1,3 +1,3 @@
 package types
 
-type Filter string
+type TFilter string
