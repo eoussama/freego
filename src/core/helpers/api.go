@@ -8,7 +8,7 @@ import (
 	"github.com/eoussama/freego/core/models"
 )
 
-func MakeRequest(endpoint []interface{}, apiKey string) (*models.Response, error) {
+func MakeRequest(endpoint []interface{}, config models.Config) (*models.Response, error) {
 	client := &http.Client{}
 
 	url := GetPath(endpoint)
@@ -18,7 +18,7 @@ func MakeRequest(endpoint []interface{}, apiKey string) (*models.Response, error
 		return nil, err
 	}
 
-	setHeaders(req, apiKey)
+	setHeaders(req, config)
 
 	resp, err := client.Do(req)
 	if err != nil {
@@ -40,7 +40,13 @@ func MakeRequest(endpoint []interface{}, apiKey string) (*models.Response, error
 	return &response, nil
 }
 
-func setHeaders(req *http.Request, apiKey string) {
-	authHeader := "Basic " + apiKey
+func setHeaders(req *http.Request, config models.Config) {
+	var authHeader string
+
+	if config.IsPartner {
+		authHeader = "Partner " + config.ApiKey + " 1"
+	} else {
+		authHeader = "Basic " + config.ApiKey
+	}
 	req.Header.Set("Authorization", authHeader)
 }

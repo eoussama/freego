@@ -3,11 +3,12 @@ package models
 import "os"
 
 type Config struct {
-	Url    string
-	Port   string
-	Route  string
-	Secret string
-	ApiKey string
+	IsPartner bool
+	Url       string
+	Port      string
+	Route     string
+	Secret    string
+	ApiKey    string
 }
 
 func (c Config) Build(options *Options) Config {
@@ -20,11 +21,12 @@ func (c Config) Build(options *Options) Config {
 	}
 
 	return Config{
-		Url:    "https://api.freestuffbot.xyz/v1",
-		Port:   resolveOption(options.WebhookPort, c.getEnv("FREEGO_WEBHOOK_PORT", "8080")),
-		Secret: resolveOption(options.WebhookSecret, c.getEnv("FREEGO_WEBHOOK_SECRET", "")),
-		ApiKey: resolveOption(options.FreestuffApiKey, c.getEnv("FREEGO_FREESTUFF_API_KEY", "")),
-		Route:  resolveOption(options.WebhookRoute, c.getEnv("FREEGO_WEBHOOK_ROUTE", "/webhook")),
+		IsPartner: options.FreestuffPartner,
+		Url:       "https://api.freestuffbot.xyz/v1",
+		Port:      resolveOption(options.WebhookPort, c.getEnv("FREEGO_WEBHOOK_PORT", "8080")),
+		Secret:    resolveOption(options.WebhookSecret, c.getEnv("FREEGO_WEBHOOK_SECRET", "")),
+		ApiKey:    resolveOption(options.FreestuffApiKey, c.getEnv("FREEGO_FREESTUFF_API_KEY", "")),
+		Route:     resolveOption(options.WebhookRoute, c.getEnv("FREEGO_WEBHOOK_ROUTE", "/webhook")),
 	}
 }
 

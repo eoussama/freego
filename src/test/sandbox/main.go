@@ -9,8 +9,9 @@ import (
 )
 
 func main() {
-	// config := freego.Config(&models.Options{WebhookSecret: "not secret"})
-	client, err := freego.Init()
+	config := freego.Config(&models.Options{FreestuffPartner: false})
+
+	client, err := freego.Init(config)
 	if err != nil {
 		panic(fmt.Sprintf("[Init Error] %s", err))
 	}

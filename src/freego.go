@@ -38,7 +38,7 @@ func (c Client) Ping() (bool, error) {
 		return false, errors.New("invalid endpoint")
 	}
 
-	response, err := helpers.MakeRequest(endpoint, c.Config.ApiKey)
+	response, err := helpers.MakeRequest(endpoint, c.Config)
 	if err != nil {
 		return false, err
 	} else if !response.Success {
@@ -55,7 +55,7 @@ func (c Client) GetGames(filter types.TFilter) ([]int, error) {
 		return make([]int, 0), errors.New("invalid endpoint")
 	}
 
-	response, err := helpers.MakeRequest(endpoint, c.Config.ApiKey)
+	response, err := helpers.MakeRequest(endpoint, c.Config)
 	if err != nil {
 		return make([]int, 0), err
 	} else if !response.Success {
@@ -85,7 +85,7 @@ func (c Client) GetGame(filter types.TFilter, gameId int) (*models.GameInfo, err
 		return nil, err
 	}
 
-	response, err := helpers.MakeRequest(endpoint, c.Config.ApiKey)
+	response, err := helpers.MakeRequest(endpoint, c.Config)
 	if err != nil {
 		return nil, err
 	} else if !response.Success {
