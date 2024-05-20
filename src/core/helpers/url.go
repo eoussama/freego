@@ -4,7 +4,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/eoussama/freego/core/consts"
 	"github.com/eoussama/freego/core/types"
 )
 
@@ -15,7 +14,7 @@ func GetPath(fragments []interface{}) string {
 		switch v := fragment.(type) {
 		case string:
 			parts = append(parts, string(v))
-		case types.Filter:
+		case types.TFilter:
 			parts = append(parts, string(v))
 		case int:
 			parts = append(parts, strconv.Itoa(v))
@@ -24,5 +23,5 @@ func GetPath(fragments []interface{}) string {
 		}
 	}
 
-	return consts.Config.Url + "/" + strings.Join(parts, "/")
+	return strings.Join(parts, "/")
 }

@@ -1,3 +1,3 @@
 package types
 
-type GameFlag int8
+type TGameFlag int8

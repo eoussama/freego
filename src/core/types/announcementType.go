@@ -1,3 +1,3 @@
 package types
 
-type AnnouncementType string
+type TAnnouncementType string

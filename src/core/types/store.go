@@ -1,3 +1,3 @@
 package types
 
-type Store string
+type TStore string
