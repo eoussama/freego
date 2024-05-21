@@ -1,6 +1,8 @@
 #!/bin/bash
 
-tag="0.0.1"
+source .env
+
+tag=$GLOBAL_VERSION
 project="freego"
 username="eoussama"
 image="$username/$project:$tag"
