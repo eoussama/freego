@@ -5,7 +5,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/eoussama/freego/core/models"
+	"github.com/eoussama/freego/src/models"
 )
 
 func MakeRequest(endpoint []interface{}, config models.Config) (*models.Response, error) {

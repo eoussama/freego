@@ -10,6 +10,8 @@ WORKDIR $PRJECT_PATH
 
 COPY .env .
 COPY ./src .
+COPY ./go.* .
+COPY ./main.go .
 COPY ./scripts/smee.sh .
 COPY ./scripts/entrypoint.sh .
 
@@ -20,4 +22,4 @@ EXPOSE 8080
 
 CMD ["bash"]
 VOLUME ["/$PRJECT_PATH"]
-ENTRYPOINT ["./entrypoint.sh"]
+ENTRYPOINT ["./scripts/entrypoint.sh"]

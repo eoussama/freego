@@ -3,12 +3,13 @@ package main
 import (
 	"fmt"
 
-	"github.com/eoussama/freego"
-	"github.com/eoussama/freego/core/enums"
-	"github.com/eoussama/freego/core/models"
+	freego "github.com/eoussama/freego"
+	"github.com/eoussama/freego/src/enums"
+	"github.com/eoussama/freego/src/models"
 )
 
 func main() {
+
 	config := freego.Config(&models.Options{FreestuffPartner: false})
 
 	client, err := freego.Init(config)
