@@ -8,12 +8,7 @@ ENV GO111MODULE=on
 ENV PRJECT_PATH=$GOPATH/src/github.com/eoussama/freego
 WORKDIR $PRJECT_PATH
 
-COPY .env .
-COPY ./src .
-COPY ./go.* .
-COPY ./main.go .
-COPY ./scripts/smee.sh .
-COPY ./scripts/entrypoint.sh .
+COPY . . 
 
 RUN go mod tidy
 RUN source .env
