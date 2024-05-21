@@ -88,7 +88,7 @@ func main() {
 	}
 
 	// Get information on the first free game
-	resp_game_info, err := client.GetGame(enums.FilterInfo, resp_games_free[0])
+	resp_game_info, err := client.GetGame(enums.FilterInfo, resp_games_free...)
 	if err != nil {
 		panic(fmt.Sprintf("[Game Info Error] %s", err))
 	}
@@ -99,6 +99,10 @@ func main() {
 	fmt.Println("free games:", len(resp_games_free))
 	fmt.Println("approved games:", len(resp_games_approved))
 	fmt.Println("game details info:", resp_game_info)
+
+	for i, game_info := range resp_game_info {
+		fmt.Println("game details info", i, ":", game_info)
+	}
 
 	// Event listener for free games
 	go func() {
