@@ -13,14 +13,14 @@ import (
 )
 
 type Client struct {
-	Config models.Config
+	Config *models.Config
 }
 
-func Config(options *models.Options) models.Config {
+func Config(options *models.Options) *models.Config {
 	return models.Config{}.Build(options)
 }
 
-func Init(config ...models.Config) (*Client, error) {
+func Init(config ...*models.Config) (*Client, error) {
 	switch len(config) {
 	case 0:
 		var config = models.Config{}.Build(&models.Options{})
