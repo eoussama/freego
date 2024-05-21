@@ -37,7 +37,7 @@ func main() {
 		panic(fmt.Sprintf("[Approved Games Error] %s", err))
 	}
 
-	resp_game_info, err := client.GetGame(enums.FilterInfo, resp_games_free[0])
+	resp_game_info, err := client.GetGame(enums.FilterInfo, resp_games_free...)
 	if err != nil {
 		panic(fmt.Sprintf("[Game Info Error] %s", err))
 	}
@@ -46,7 +46,10 @@ func main() {
 	fmt.Println("all games:", len(resp_games_all))
 	fmt.Println("free games:", len(resp_games_free))
 	fmt.Println("approved games:", len(resp_games_approved))
-	fmt.Println("game details info:", resp_game_info)
+
+	for i, game_info := range resp_game_info {
+		fmt.Println("game details info", i, ":", game_info)
+	}
 
 	go func() {
 		err = client.On(enums.EventFreeGames, func(e *models.Event, err error) {

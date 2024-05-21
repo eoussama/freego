@@ -79,32 +79,53 @@ func (c Client) GetGames(filter types.TFilter) ([]int, error) {
 	return make([]int, 0), errors.New("data is not of type []int")
 }
 
-func (c Client) GetGame(filter types.TFilter, gameId int) (*models.GameInfo, error) {
-	endpoint, err := consts.EndpointGame.Prepend(c.Config.Url).Append(filter).Build(gameId)
-	if err != nil {
-		return nil, err
-	}
+func (c Client) GetGame(filter types.TFilter, gameIds ...int) ([]*models.GameInfo, error) {
+	const batchSize = 5
+	var allResults []*models.GameInfo
 
-	response, err := helpers.MakeRequest(endpoint, c.Config)
-	if err != nil {
-		return nil, err
-	} else if !response.Success {
-		return nil, errors.New(response.Error)
-	}
+	for i := 0; i < len(gameIds); i += batchSize {
+		end := i + batchSize
+		if end > len(gameIds) {
+			end = len(gameIds)
+		}
 
-	if responseData, ok := response.Data.(map[string]interface{}); ok {
-		var key string = strconv.Itoa(gameId)
-		var data map[string]interface{} = responseData[key].(map[string]interface{})
+		batch := gameIds[i:end]
+		idsStr := helpers.JoinNumbers(batch, "+")
 
-		result, err := models.GameInfo{}.From(data)
+		endpoint, err := consts.EndpointGame.Prepend(c.Config.Url).Append(filter).Build(idsStr)
 		if err != nil {
 			return nil, err
 		}
 
-		return result, nil
-	} else {
-		return nil, errors.New("invalid payload")
+		response, err := helpers.MakeRequest(endpoint, c.Config)
+		if err != nil {
+			return nil, err
+		} else if !response.Success {
+			return nil, errors.New(response.Error)
+		}
+
+		if responseData, ok := response.Data.(map[string]interface{}); ok {
+			for _, id := range batch {
+				key := strconv.Itoa(id)
+
+				data, ok := responseData[key].(map[string]interface{})
+				if !ok {
+					return nil, errors.New("invalid payload structure")
+				}
+
+				result, err := models.GameInfo{}.From(data)
+				if err != nil {
+					return nil, err
+				}
+
+				allResults = append(allResults, result)
+			}
+		} else {
+			return nil, errors.New("invalid payload")
+		}
 	}
+
+	return allResults, nil
 }
 
 func (c Client) On(event types.TEvent, callback func(*models.Event, error)) error {
