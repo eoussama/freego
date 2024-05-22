@@ -8,6 +8,7 @@ import (
 	"strconv"
 
 	"github.com/eoussama/freego/src/consts"
+	"github.com/eoussama/freego/src/enums"
 	"github.com/eoussama/freego/src/helpers"
 	"github.com/eoussama/freego/src/models"
 	"github.com/eoussama/freego/src/types"
@@ -83,6 +84,14 @@ func (c Client) GetGames(filter types.TFilter) ([]int, error) {
 func (c Client) GetGame(filter types.TFilter, gameIds ...int) ([]*models.GameInfo, error) {
 	const batchSize = 5
 	var allResults []*models.GameInfo
+
+	if len(gameIds) == 0 {
+		return nil, errors.New("missing game id(s)")
+	}
+
+	if filter == enums.Filteranalytics && !c.Config.IsPartner {
+		return nil, errors.New("unauthorized endpoint")
+	}
 
 	for i := 0; i < len(gameIds); i += batchSize {
 		end := i + batchSize
