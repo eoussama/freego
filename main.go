@@ -3,6 +3,7 @@ package freego
 import (
 	"encoding/json"
 	"errors"
+	"io"
 	"net/http"
 	"strconv"
 
@@ -128,6 +129,20 @@ func (c Client) GetGame(filter types.TFilter, gameIds ...int) ([]*models.GameInf
 	return allResults, nil
 }
 
+func (c Client) GetEvent(body io.ReadCloser) (*models.Event, error) {
+	var event models.Event
+
+	if err := json.NewDecoder(body).Decode(&event); err != nil {
+		return nil, errors.New("bad request")
+	}
+
+	if event.Secret != c.Config.Secret {
+		return nil, errors.New("unauthorized source")
+	}
+
+	return &event, nil
+}
+
 func (c Client) On(event types.TEvent, callback func(*models.Event, error)) error {
 	handler := func(w http.ResponseWriter, r *http.Request) {
 
@@ -136,14 +151,13 @@ func (c Client) On(event types.TEvent, callback func(*models.Event, error)) erro
 			return
 		}
 
-		var reqBody models.Event
-		if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
-			callback(nil, errors.New("bad request"))
-			return
+		result, err := c.GetEvent(r.Body)
+		if err != nil {
+			callback(nil, err)
 		}
 
-		if reqBody.Secret == c.Config.Secret {
-			callback(&reqBody, nil)
+		if event == result.Event {
+			callback(result, nil)
 		}
 	}
 
