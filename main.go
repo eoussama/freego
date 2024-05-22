@@ -8,7 +8,6 @@ import (
 	"strconv"
 
 	"github.com/eoussama/freego/src/consts"
-	"github.com/eoussama/freego/src/enums"
 	"github.com/eoussama/freego/src/helpers"
 	"github.com/eoussama/freego/src/models"
 	"github.com/eoussama/freego/src/types"
@@ -40,7 +39,7 @@ func (c Client) Ping() (bool, error) {
 		return false, errors.New("invalid endpoint")
 	}
 
-	response, err := helpers.MakeRequest(endpoint, c.Config)
+	response, err := helpers.MakeRequest(http.MethodGet, endpoint, c.Config)
 	if err != nil {
 		return false, err
 	} else if !response.Success {
@@ -57,7 +56,7 @@ func (c Client) GetGames(filter types.TFilter) ([]int, error) {
 		return make([]int, 0), errors.New("invalid endpoint")
 	}
 
-	response, err := helpers.MakeRequest(endpoint, c.Config)
+	response, err := helpers.MakeRequest(http.MethodGet, endpoint, c.Config)
 	if err != nil {
 		return make([]int, 0), err
 	} else if !response.Success {
@@ -81,16 +80,12 @@ func (c Client) GetGames(filter types.TFilter) ([]int, error) {
 	return make([]int, 0), errors.New("data is not of type []int")
 }
 
-func (c Client) GetGame(filter types.TFilter, gameIds ...int) ([]*models.GameInfo, error) {
+func (c Client) GetGameInfo(gameIds ...int) ([]*models.GameInfo, error) {
 	const batchSize = 5
 	var allResults []*models.GameInfo
 
 	if len(gameIds) == 0 {
 		return nil, errors.New("missing game id(s)")
-	}
-
-	if filter == enums.Filteranalytics && !c.Config.IsPartner {
-		return nil, errors.New("unauthorized endpoint")
 	}
 
 	for i := 0; i < len(gameIds); i += batchSize {
@@ -102,12 +97,12 @@ func (c Client) GetGame(filter types.TFilter, gameIds ...int) ([]*models.GameInf
 		batch := gameIds[i:end]
 		idsStr := helpers.JoinNumbers(batch, "+")
 
-		endpoint, err := consts.EndpointGame.Prepend(c.Config.Url).Append(filter).Build(idsStr)
+		endpoint, err := consts.EndpointGameInfo.Prepend(c.Config.Url).Build(idsStr)
 		if err != nil {
 			return nil, err
 		}
 
-		response, err := helpers.MakeRequest(endpoint, c.Config)
+		response, err := helpers.MakeRequest(http.MethodGet, endpoint, c.Config)
 		if err != nil {
 			return nil, err
 		} else if !response.Success {
@@ -136,6 +131,28 @@ func (c Client) GetGame(filter types.TFilter, gameIds ...int) ([]*models.GameInf
 	}
 
 	return allResults, nil
+}
+
+func (c Client) GetGameAnalytics(gameId int) (any, error) {
+	if !c.Config.IsPartner {
+		return nil, errors.New("unauthorized endpoint")
+	}
+
+	id := strconv.Itoa(gameId)
+
+	endpoint, err := consts.EndpointGameAnalytics.Prepend(c.Config.Url).Build(id)
+	if err != nil {
+		return nil, err
+	}
+
+	response, err := helpers.MakeRequest(http.MethodPost, endpoint, c.Config)
+	if err != nil {
+		return nil, err
+	} else if !response.Success {
+		return nil, errors.New(response.Error)
+	}
+
+	return response, nil
 }
 
 func (c Client) GetEvent(body io.ReadCloser) (*models.Event, error) {
