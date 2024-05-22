@@ -1,9 +1,11 @@
 package models
 
 type Options struct {
-	FreestuffPartner bool
-	WebhookPort      string
-	WebhookRoute     string
-	WebhookSecret    string
-	FreestuffApiKey  string
+	WebhookPort        string
+	WebhookRoute       string
+	WebhookSecret      string
+	FreestuffPartner   bool
+	FreestuffApiUrl    string
+	FreestuffApiKey    string
+	FreestuffApiOrigin string
 }
