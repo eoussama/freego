@@ -1,6 +1,7 @@
 package helpers
 
 import (
+	"bytes"
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
@@ -8,12 +9,17 @@ import (
 	"github.com/eoussama/freego/src/models"
 )
 
-func MakeRequest(endpoint []interface{}, config *models.Config) (*models.Response, error) {
+func MakeRequest(method string, endpoint []interface{}, data interface{}, config *models.Config) (*models.Response, error) {
 	client := &http.Client{}
-
 	url := GetPath(endpoint)
 
-	req, err := http.NewRequest("GET", url, nil)
+	jsonData, err := json.Marshal(data)
+	if err != nil {
+		return nil, err
+	}
+
+	body := bytes.NewBuffer(jsonData)
+	req, err := http.NewRequest(method, url, body)
 	if err != nil {
 		return nil, err
 	}
@@ -24,15 +30,15 @@ func MakeRequest(endpoint []interface{}, config *models.Config) (*models.Respons
 	if err != nil {
 		return nil, err
 	}
-
 	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
+
+	result, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
 	}
 
 	var response models.Response
-	err = json.Unmarshal(body, &response)
+	err = json.Unmarshal(result, &response)
 	if err != nil {
 		return nil, err
 	}

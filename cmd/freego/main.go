@@ -37,7 +37,7 @@ func main() {
 		panic(fmt.Sprintf("[Approved Games Error] %s", err))
 	}
 
-	resp_game_info, err := client.GetGame(enums.FilterInfo, resp_games_free...)
+	resp_game_info, err := client.GetGameInfo(resp_games_free...)
 	if err != nil {
 		panic(fmt.Sprintf("[Game Info Error] %s", err))
 	}
