@@ -8,6 +8,7 @@ type Config struct {
 	Port      string
 	Route     string
 	Secret    string
+	Origin    string
 	ApiKey    string
 }
 
@@ -21,11 +22,12 @@ func (c Config) Build(options *Options) *Config {
 	}
 
 	c.IsPartner = options.FreestuffPartner
-	c.Url = "https://api.freestuffbot.xyz/v1"
 	c.Port = resolveOption(options.WebhookPort, c.getEnv("FREEGO_WEBHOOK_PORT", "8080"))
 	c.Secret = resolveOption(options.WebhookSecret, c.getEnv("FREEGO_WEBHOOK_SECRET", ""))
+	c.Url = resolveOption(options.FreestuffApiUrl, c.getEnv("FREEGO_FREESTUFF_API_URL", ""))
 	c.ApiKey = resolveOption(options.FreestuffApiKey, c.getEnv("FREEGO_FREESTUFF_API_KEY", ""))
 	c.Route = resolveOption(options.WebhookRoute, c.getEnv("FREEGO_WEBHOOK_ROUTE", "/webhook"))
+	c.Origin = resolveOption(options.FreestuffApiOrigin, c.getEnv("FREEGO_FREESTUFF_API_ORIGIN", ""))
 
 	return &c
 }

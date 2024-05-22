@@ -3,6 +3,7 @@ package freego
 import (
 	"encoding/json"
 	"errors"
+	"io"
 	"net/http"
 	"strconv"
 
@@ -38,7 +39,7 @@ func (c Client) Ping() (bool, error) {
 		return false, errors.New("invalid endpoint")
 	}
 
-	response, err := helpers.MakeRequest(endpoint, c.Config)
+	response, err := helpers.MakeRequest(http.MethodGet, endpoint, nil, c.Config)
 	if err != nil {
 		return false, err
 	} else if !response.Success {
@@ -55,7 +56,7 @@ func (c Client) GetGames(filter types.TFilter) ([]int, error) {
 		return make([]int, 0), errors.New("invalid endpoint")
 	}
 
-	response, err := helpers.MakeRequest(endpoint, c.Config)
+	response, err := helpers.MakeRequest(http.MethodGet, endpoint, nil, c.Config)
 	if err != nil {
 		return make([]int, 0), err
 	} else if !response.Success {
@@ -79,9 +80,13 @@ func (c Client) GetGames(filter types.TFilter) ([]int, error) {
 	return make([]int, 0), errors.New("data is not of type []int")
 }
 
-func (c Client) GetGame(filter types.TFilter, gameIds ...int) ([]*models.GameInfo, error) {
+func (c Client) GetGameInfo(gameIds []int, languages []string) ([]*models.GameInfo, error) {
 	const batchSize = 5
 	var allResults []*models.GameInfo
+
+	if len(gameIds) == 0 {
+		return nil, errors.New("missing game id(s)")
+	}
 
 	for i := 0; i < len(gameIds); i += batchSize {
 		end := i + batchSize
@@ -90,14 +95,15 @@ func (c Client) GetGame(filter types.TFilter, gameIds ...int) ([]*models.GameInf
 		}
 
 		batch := gameIds[i:end]
-		idsStr := helpers.JoinNumbers(batch, "+")
+		idsStr := helpers.Join(helpers.IntToInterfaceSlice(batch), "+")
+		langs := helpers.Join(helpers.StringToInterfaceSlice(languages), "+")
 
-		endpoint, err := consts.EndpointGame.Prepend(c.Config.Url).Append(filter).Build(idsStr)
+		endpoint, err := consts.EndpointGameInfo.Prepend(c.Config.Url).Append("?lang=" + langs).Build(idsStr)
 		if err != nil {
 			return nil, err
 		}
 
-		response, err := helpers.MakeRequest(endpoint, c.Config)
+		response, err := helpers.MakeRequest(http.MethodGet, endpoint, nil, c.Config)
 		if err != nil {
 			return nil, err
 		} else if !response.Success {
@@ -128,6 +134,48 @@ func (c Client) GetGame(filter types.TFilter, gameIds ...int) ([]*models.GameInf
 	return allResults, nil
 }
 
+func (c Client) GetGameAnalytics(gameId int, serviceId uint, service types.TService, data any) (any, error) {
+	if !c.Config.IsPartner {
+		return nil, errors.New("unauthorized endpoint")
+	}
+
+	id := strconv.Itoa(gameId)
+
+	endpoint, err := consts.EndpointGameAnalytics.Prepend(c.Config.Url).Build(id)
+	if err != nil {
+		return nil, err
+	}
+
+	body := models.AnalyticsBody{
+		Data:    data,
+		Service: service,
+		Suid:    serviceId,
+	}
+
+	response, err := helpers.MakeRequest(http.MethodPost, endpoint, body, c.Config)
+	if err != nil {
+		return nil, err
+	} else if !response.Success {
+		return nil, errors.New(response.Error)
+	}
+
+	return models.AnalyticsResponse{Success: true}, nil
+}
+
+func (c Client) GetEvent(body io.ReadCloser) (*models.Event, error) {
+	var event models.Event
+
+	if err := json.NewDecoder(body).Decode(&event); err != nil {
+		return nil, errors.New("bad request")
+	}
+
+	if event.Secret != c.Config.Secret {
+		return nil, errors.New("unauthorized source")
+	}
+
+	return &event, nil
+}
+
 func (c Client) On(event types.TEvent, callback func(*models.Event, error)) error {
 	handler := func(w http.ResponseWriter, r *http.Request) {
 
@@ -136,14 +184,13 @@ func (c Client) On(event types.TEvent, callback func(*models.Event, error)) erro
 			return
 		}
 
-		var reqBody models.Event
-		if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
-			callback(nil, errors.New("bad request"))
-			return
+		result, err := c.GetEvent(r.Body)
+		if err != nil {
+			callback(nil, err)
 		}
 
-		if reqBody.Secret == c.Config.Secret {
-			callback(&reqBody, nil)
+		if event == result.Event {
+			callback(result, nil)
 		}
 	}
 

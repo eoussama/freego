@@ -5,12 +5,17 @@ import (
 	"strings"
 )
 
-func JoinNumbers(nums []int, separator string) string {
-	strNums := make([]string, len(nums))
+func Join(items []interface{}, separator string) string {
+	strItems := make([]string, len(items))
 
-	for i, id := range nums {
-		strNums[i] = strconv.Itoa(id)
+	for i, item := range items {
+		switch v := item.(type) {
+		case int:
+			strItems[i] = strconv.Itoa(v)
+		case string:
+			strItems[i] = v
+		}
 	}
 
-	return strings.Join(strNums, separator)
+	return strings.Join(strItems, separator)
 }
