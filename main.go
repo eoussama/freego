@@ -39,7 +39,7 @@ func (c Client) Ping() (bool, error) {
 		return false, errors.New("invalid endpoint")
 	}
 
-	response, err := helpers.MakeRequest(http.MethodGet, endpoint, c.Config)
+	response, err := helpers.MakeRequest(http.MethodGet, endpoint, nil, c.Config)
 	if err != nil {
 		return false, err
 	} else if !response.Success {
@@ -56,7 +56,7 @@ func (c Client) GetGames(filter types.TFilter) ([]int, error) {
 		return make([]int, 0), errors.New("invalid endpoint")
 	}
 
-	response, err := helpers.MakeRequest(http.MethodGet, endpoint, c.Config)
+	response, err := helpers.MakeRequest(http.MethodGet, endpoint, nil, c.Config)
 	if err != nil {
 		return make([]int, 0), err
 	} else if !response.Success {
@@ -102,7 +102,7 @@ func (c Client) GetGameInfo(gameIds ...int) ([]*models.GameInfo, error) {
 			return nil, err
 		}
 
-		response, err := helpers.MakeRequest(http.MethodGet, endpoint, c.Config)
+		response, err := helpers.MakeRequest(http.MethodGet, endpoint, nil, c.Config)
 		if err != nil {
 			return nil, err
 		} else if !response.Success {
@@ -133,7 +133,7 @@ func (c Client) GetGameInfo(gameIds ...int) ([]*models.GameInfo, error) {
 	return allResults, nil
 }
 
-func (c Client) GetGameAnalytics(gameId int) (any, error) {
+func (c Client) GetGameAnalytics(gameId int, serviceId uint, service types.TService, data any) (any, error) {
 	if !c.Config.IsPartner {
 		return nil, errors.New("unauthorized endpoint")
 	}
@@ -145,7 +145,13 @@ func (c Client) GetGameAnalytics(gameId int) (any, error) {
 		return nil, err
 	}
 
-	response, err := helpers.MakeRequest(http.MethodPost, endpoint, c.Config)
+	body := models.AnalyticsBody{
+		Data:    data,
+		Service: service,
+		Suid:    serviceId,
+	}
+
+	response, err := helpers.MakeRequest(http.MethodPost, endpoint, body, c.Config)
 	if err != nil {
 		return nil, err
 	} else if !response.Success {
