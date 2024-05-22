@@ -80,7 +80,7 @@ func (c Client) GetGames(filter types.TFilter) ([]int, error) {
 	return make([]int, 0), errors.New("data is not of type []int")
 }
 
-func (c Client) GetGameInfo(gameIds ...int) ([]*models.GameInfo, error) {
+func (c Client) GetGameInfo(gameIds []int) ([]*models.GameInfo, error) {
 	const batchSize = 5
 	var allResults []*models.GameInfo
 
@@ -158,7 +158,7 @@ func (c Client) GetGameAnalytics(gameId int, serviceId uint, service types.TServ
 		return nil, errors.New(response.Error)
 	}
 
-	return response, nil
+	return models.AnalyticsResponse{Success: true}, nil
 }
 
 func (c Client) GetEvent(body io.ReadCloser) (*models.Event, error) {
