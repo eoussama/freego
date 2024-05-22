@@ -49,62 +49,59 @@ import (
 	"fmt"
 
 	"github.com/eoussama/freego"
-	"github.com/eoussama/freego/core/enums"
-	"github.com/eoussama/freego/core/models"
+	"github.com/eoussama/freego/src/enums"
+	"github.com/eoussama/freego/src/models"
 )
 
 func main() {
-	// Configuration (optional)
+
 	config := freego.Config(&models.Options{FreestuffPartner: false})
 
-	// Initialize client
 	client, err := freego.Init(config)
 	if err != nil {
 		panic(fmt.Sprintf("[Init Error] %s", err))
 	}
 
-	// Ping the API
+	// Pining the API
 	resp_ping, err := client.Ping()
 	if err != nil {
 		panic(fmt.Sprintf("[Ping Error] %s", err))
 	}
 
-	// Get all games
+	// Fetching all games
 	resp_games_all, err := client.GetGames(enums.FilterAll)
 	if err != nil {
 		panic(fmt.Sprintf("[All Games Error] %s", err))
 	}
 
-	// Get free games
+	// Fetching the free games
 	resp_games_free, err := client.GetGames(enums.FilterFree)
 	if err != nil {
 		panic(fmt.Sprintf("[Free Games Error] %s", err))
 	}
 
-	// Get approved games
+	// Fetching the approved games
 	resp_games_approved, err := client.GetGames(enums.FilterApproved)
 	if err != nil {
 		panic(fmt.Sprintf("[Approved Games Error] %s", err))
 	}
 
-	// Get information on the first free game
-	resp_game_info, err := client.GetGame(enums.FilterInfo, resp_games_free...)
+	// Fetching game info for the fetched free games, which localizations for french and german
+	resp_game_info, err := client.GetGameInfo(resp_games_free, []string{"fr-FR", "de-DE"})
 	if err != nil {
 		panic(fmt.Sprintf("[Game Info Error] %s", err))
 	}
 
-	// Print results
 	fmt.Println("ping:", resp_ping)
 	fmt.Println("all games:", len(resp_games_all))
 	fmt.Println("free games:", len(resp_games_free))
 	fmt.Println("approved games:", len(resp_games_approved))
-	fmt.Println("game details info:", resp_game_info)
 
 	for i, game_info := range resp_game_info {
 		fmt.Println("game details info", i, ":", game_info)
 	}
 
-	// Event listener for free games
+	// Event subscription
 	go func() {
 		err = client.On(enums.EventFreeGames, func(e *models.Event, err error) {
 			if err != nil {

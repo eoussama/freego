@@ -9,7 +9,7 @@ import (
 	"github.com/eoussama/freego/src/models"
 )
 
-func MakeRequest(method string, endpoint []interface{}, data interface{}, config *models.Config) (*models.Response, error) {
+func MakeRequest(method string, endpoint []interface{}, data interface{}, config *models.Config) (*models.GenericResponse, error) {
 	client := &http.Client{}
 	url := GetPath(endpoint)
 
@@ -37,7 +37,7 @@ func MakeRequest(method string, endpoint []interface{}, data interface{}, config
 		return nil, err
 	}
 
-	var response models.Response
+	var response models.GenericResponse
 	err = json.Unmarshal(result, &response)
 	if err != nil {
 		return nil, err
