@@ -1,6 +1,6 @@
 # Contributing to Freego
 
-Thank you for your interest in contributing to **Freegho**! We appreciate your help in making the project better.
+Thank you for your interest in contributing to **Freego**! We appreciate your help in making the project better.
 
 Before you start contributing, please take a moment to review this guide, which outlines the process for contributing and the community guidelines we follow.
 
