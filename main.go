@@ -110,13 +110,13 @@ func (c Client) GetGameInfo(gameIds []int, languages []string) ([]*models.GameIn
 			return nil, errors.New(response.Error)
 		}
 
-		if responseData, ok := response.Data.(map[string]interface{}); ok {
+		if responseData, ok := response.Data.(map[string]any); ok {
 			for _, id := range batch {
 				key := strconv.Itoa(id)
 
-				data, ok := responseData[key].(map[string]interface{})
+				data, ok := responseData[key].(map[string]any)
 				if !ok {
-					return nil, errors.New("invalid payload structure")
+					continue
 				}
 
 				result, err := models.GameInfo{}.From(data)
