@@ -4,7 +4,7 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses
 [Semantic Versioning](https://semver.org/).
 
-## [0.1.0]
+## [0.1.0] - 2026-10-01
 
 Rewrite for the FreeStuff API v2. FreeStuff deprecated API v1, which v0.0.x
 was built on, so this release replaces the whole public API. See
@@ -100,5 +100,5 @@ Findings from the live API (2026-10-01) that differ from its documentation:
 
 - Skip nullish game info ids (#43).
 
-[0.1.0]: https://github.com/eoussama/freego/compare/v0.0.5...HEAD
+[0.1.0]: https://github.com/eoussama/freego/compare/v0.0.5...v0.1.0
 [0.0.5]: https://github.com/eoussama/freego/releases/tag/v0.0.5
