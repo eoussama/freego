@@ -1,14 +1,21 @@
 #!/bin/bash
+# Builds the development image and opens a shell in it, with the project
+# mounted. Run it from the project root.
+set -euo pipefail
 
-source .env
+if [ -f .env ]; then
+  # shellcheck disable=SC1091
+  source .env
+fi
 
-tag=$GLOBAL_VERSION
-project="freego"
-username="eoussama"
-image="$username/$project:$tag"
+tag="${GLOBAL_VERSION:-latest}"
+image="eoussama/freego:$tag"
+port="${FREEGO_WEBHOOK_PORT:-8080}"
 
-docker build -f ./docker/Dockerfile -t $image .
+docker build -f ./docker/Dockerfile -t "$image" .
+# Named so that a second shell can join it: docker exec -it freego-dev bash
 docker run -it --rm \
-  -p 8080:8080 \
+  --name freego-dev \
+  -p "$port:$port" \
   -v "$(pwd)":/go/src/github.com/eoussama/freego \
-  $image
+  "$image"

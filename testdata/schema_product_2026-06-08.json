@@ -1,0 +1,202 @@
+{
+    "type": "fsb:static:apiv2:schema",
+    "schema": {
+        "type": "object",
+        "required": [
+            "id",
+            "title",
+            "prices",
+            "kind",
+            "tags",
+            "images",
+            "description",
+            "rating",
+            "copyright",
+            "until",
+            "type",
+            "urls",
+            "store",
+            "platforms",
+            "flags",
+            "notice",
+            "meta",
+            "staffApproved",
+            "updatedAt"
+        ],
+        "properties": {
+            "id": {
+                "type": "number"
+            },
+            "title": {
+                "type": "string"
+            },
+            "prices": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "required": [
+                        "currency",
+                        "oldValue",
+                        "newValue",
+                        "converted"
+                    ],
+                    "properties": {
+                        "currency": {
+                            "type": "string"
+                        },
+                        "oldValue": {
+                            "type": "number"
+                        },
+                        "newValue": {
+                            "type": "number"
+                        },
+                        "converted": {
+                            "type": "boolean"
+                        }
+                    }
+                }
+            },
+            "kind": {
+                "type": "string"
+            },
+            "tags": {
+                "type": "array",
+                "items": {
+                    "type": "string"
+                }
+            },
+            "images": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "required": [
+                        "url",
+                        "flags",
+                        "priority"
+                    ],
+                    "properties": {
+                        "url": {
+                            "type": "string"
+                        },
+                        "flags": {
+                            "type": "number"
+                        },
+                        "priority": {
+                            "type": "number"
+                        }
+                    }
+                }
+            },
+            "description": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "required": [
+                        "lang",
+                        "text",
+                        "priority",
+                        "flags"
+                    ],
+                    "properties": {
+                        "lang": {
+                            "type": "string"
+                        },
+                        "text": {
+                            "type": "string"
+                        },
+                        "priority": {
+                            "type": "number"
+                        },
+                        "flags": {
+                            "type": "number"
+                        }
+                    }
+                }
+            },
+            "rating": {
+                "type": "number"
+            },
+            "copyright": {
+                "type": "string"
+            },
+            "until": {
+                "type": "number"
+            },
+            "type": {
+                "type": "string"
+            },
+            "urls": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "required": [
+                        "url",
+                        "flags",
+                        "priority",
+                        "store",
+                        "platforms"
+                    ],
+                    "properties": {
+                        "url": {
+                            "type": "string"
+                        },
+                        "flags": {
+                            "type": "number"
+                        },
+                        "priority": {
+                            "type": "number"
+                        },
+                        "store": {
+                            "type": "string"
+                        },
+                        "platforms": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "store": {
+                "type": "string"
+            },
+            "platforms": {
+                "type": "array",
+                "items": {
+                    "type": "string"
+                }
+            },
+            "flags": {
+                "type": "number"
+            },
+            "notice": {
+                "type": "string"
+            },
+            "meta": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "required": [
+                        "key",
+                        "value"
+                    ],
+                    "properties": {
+                        "key": {
+                            "type": "string"
+                        },
+                        "value": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "staffApproved": {
+                "type": "boolean"
+            },
+            "updatedAt": {
+                "type": "number"
+            }
+        }
+    }
+}
