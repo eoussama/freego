@@ -1,0 +1,37 @@
+{
+  "id": 123456,
+  "title": "Example Game",
+  "prices": [
+    { "currency": "USD", "oldValue": 1999, "newValue": 0, "converted": false },
+    { "currency": "EUR", "oldValue": 1849, "newValue": 0, "converted": true }
+  ],
+  "kind": "game",
+  "tags": ["Action", "Indie"],
+  "images": [
+    { "url": "https://example.com/promo.jpg", "flags": 19, "priority": 10 },
+    { "url": "https://example.com/logo.png", "flags": 37, "priority": 50 },
+    { "url": "https://example.com/tags.jpg", "flags": 4099, "priority": 80 }
+  ],
+  "description": [
+    { "lang": "de", "text": "Ein Beispielspiel.", "priority": 1, "flags": 0 },
+    { "lang": "en", "text": "An example game.", "priority": 2, "flags": 0 }
+  ],
+  "rating": 0.87,
+  "copyright": "Example Studio",
+  "until": 1790867606000,
+  "type": "keep",
+  "urls": [
+    { "url": "https://store.example.com/app/1", "flags": 9, "priority": 10, "store": "steam", "platforms": ["windows", "linux"] },
+    { "url": "https://redirect.example.com/1", "flags": 14, "priority": 90, "store": "steam", "platforms": [] }
+  ],
+  "store": "steam",
+  "platforms": ["windows", "linux", "quantum"],
+  "flags": 4108,
+  "notice": "",
+  "meta": [
+    { "key": "steam.subids", "value": "1,2" },
+    { "key": "igdb.gameid", "value": "42" }
+  ],
+  "staffApproved": true,
+  "updatedAt": 1790860000000
+}
