@@ -1,0 +1,25 @@
+{
+  "id": 654321,
+  "title": "Older Format Game",
+  "prices": [
+    { "currency": "EUR", "oldValue": 999, "newValue": 0, "converted": false }
+  ],
+  "kind": "dlc",
+  "tags": [],
+  "images": [],
+  "description": "A description delivered as a plain string.",
+  "rating": 0.5,
+  "copyright": "",
+  "until": 0,
+  "type": "timed",
+  "urls": [
+    { "url": "https://store.example.com/app/2", "flags": 1, "priority": 1 }
+  ],
+  "store": "epic",
+  "platforms": [],
+  "flags": 0,
+  "notice": "Only in some regions",
+  "meta": [],
+  "staffApproved": false,
+  "updatedAt": 0
+}
